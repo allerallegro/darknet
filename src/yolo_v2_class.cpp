@@ -33,20 +33,20 @@ int init(const char *configurationFilename, const char *weightsFilename, int gpu
     return 1;
 }
 
-int detect_image(const char *filename, bbox_t_container &container)
+int detect_image(const char *filename, bbox_t_container &container,float thresh)
 {
-    std::vector<bbox_t> detection = detector->detect(filename);
+    std::vector<bbox_t> detection = detector->detect(filename,thresh);
     for (size_t i = 0; i < detection.size() && i < C_SHARP_MAX_OBJECTS; ++i)
         container.candidates[i] = detection[i];
     return detection.size();
 }
 
-int detect_mat(const uint8_t* data, const size_t data_length, bbox_t_container &container) {
+int detect_mat(const uint8_t* data, const size_t data_length, bbox_t_container &container,float thresh) {
 #ifdef OPENCV
     std::vector<char> vdata(data, data + data_length);
     cv::Mat image = imdecode(cv::Mat(vdata), 1);
 
-    std::vector<bbox_t> detection = detector->detect(image);
+    std::vector<bbox_t> detection = detector->detect(image,thresh);
     for (size_t i = 0; i < detection.size() && i < C_SHARP_MAX_OBJECTS; ++i)
         container.candidates[i] = detection[i];
     return detection.size();
